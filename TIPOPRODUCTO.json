@@ -1,0 +1,18 @@
+[
+  {
+    "id_tipo": 1000,
+    "descripcion_tipo": "Iphone"
+  },
+  {
+    "id_tipo": 1001,
+    "descripcion_tipo": "Ipad"
+  },
+  {
+    "id_tipo": 1002,
+    "descripcion_tipo": "Mac"
+  },
+  {
+    "id_tipo": 1003,
+    "descripcion_tipo": "Accesorios"
+  }
+]
