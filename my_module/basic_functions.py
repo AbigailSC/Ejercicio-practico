@@ -331,3 +331,9 @@ def custom_sorted_bussiness(list_to_sort: list, fn):
                 copy_list[i] = copy_list[j]
                 copy_list[j] = pivot
     return copy_list
+
+def custom_find_with_return_value(array: list, value: str | int | float) -> str | int | float | None:
+    for element in array:
+        if element["id_tipo"] == value:
+            return element["descripcion_tipo"]
+    return None

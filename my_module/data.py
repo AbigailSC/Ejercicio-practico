@@ -199,7 +199,7 @@ def array_sub_menu_options(sub_menu: list) -> list:
         3) Option 3
     """
     for index in range(0, len(sub_menu)):
-        print(f"{index + 1}) {sub_menu[index]["id_producto"]} - {sub_menu[index]["descripcion"]}")
+        print(f"{index + 1}) [ID]: {sub_menu[index]["id_producto"]} - [DESCRIPCIÓN]: {sub_menu[index]["descripcion"]} - [NACIONALIDAD]: {sub_menu[index]["nacionalidad"]} - [TIPO]: {sub_menu[index]["tipo"]} - [PRECIO]: {sub_menu[index]["precio"]}")
 
 def array_sub_menu_options_objects(employee: list, employee_personal_data: list, attribute_to_show: str | None) -> list:
     """
@@ -281,17 +281,21 @@ def map_logs(path_logs: str) -> None:
     except Exception:
         print("[ERROR] No se pudo mapear los logs.")
 
-def bussiness_array_sub_menu_options(lista) -> None:
-    for index in range(0, len(lista)):
-        print(f"{index + 1}) {lista[index].name}")
+def bussiness_array_sub_menu_options(lista, tipo: int | None) -> None:
+    if tipo == None:
+        for index in range(0, len(lista)):
+            print(f"{index + 1}) {lista[index].name}")
+    else:
+        for index in range(0, len(lista)):
+            print(f"{index + 1}) {lista[index]["descripcion_tipo"]}")
 
-def bussiness_get_value_of_array(list_values, msg: str, msg_error: str) -> int:
-    bussiness_array_sub_menu_options(list_values)
+def bussiness_get_value_of_array(list_values, msg: str, msg_error: str, tipo: int | None) -> int:
+    bussiness_array_sub_menu_options(list_values, tipo)
     index_selected = get_number_with_range(msg, msg_error, 0, len(list_values), 5)
     return list_values[index_selected - 1]
 
-def get_index_producto(lista_productos: list, msg: str, msg_error: str) -> int:
-    bussiness_array_sub_menu_options(lista_productos)
+def get_index_producto(lista_productos: list, msg: str, msg_error: str, tipo: int | None) -> int:
+    bussiness_array_sub_menu_options(lista_productos, tipo)
     index_selected = get_number_with_range(msg, msg_error, 0, len(lista_productos), 5)
     return index_selected
 

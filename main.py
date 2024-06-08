@@ -1,10 +1,10 @@
 from my_module.basic_functions import read_json, write_json, custom_sorted_bussiness, custom_map
 from my_module.data import show_menu, wish_continue, select_option_from_menu, array_sub_menu_options
-from my_module.models import crear_producto, eliminar_producto, modificar_producto, listado_productos_caros, listado_productos_caros, listado_precio_promedio_tipo
+from my_module.models import crear_producto, eliminar_producto, modificar_producto, listado_productos_caros, listado_productos_caros, listado_precio_promedio_tipo, listado_productos_descripcion_tipo, listado_productos_por_tipo
 
-p1 = {"id_producto": 1, "descripcion": "algo", "nacionalidad": 2, "tipo": 1, "precio": 123.0}
-p2 = {"id_producto": 2, "descripcion": "algo2", "nacionalidad": 2, "tipo": 1, "precio": 323.0}
-p3 = {"id_producto": 3, "descripcion": "algoasdasdasd", "nacionalidad": 2, "tipo": 2, "precio": 20.0}
+p1 = {"id_producto": 1, "descripcion": "algo", "nacionalidad": 2, "tipo": 1000, "precio": 123.0}
+p2 = {"id_producto": 2, "descripcion": "algo2", "nacionalidad": 2, "tipo": 1000, "precio": 323.0}
+p3 = {"id_producto": 3, "descripcion": "algoasdasdasd", "nacionalidad": 2, "tipo": 1002, "precio": 20.0}
 
 def main() -> None:
     OPTIONS = read_json("OPTIONS.json", "r")
@@ -16,7 +16,7 @@ def main() -> None:
         option_selected = select_option_from_menu(OPTIONS)
         match option_selected:
             case 1:
-                new_product = crear_producto()
+                new_product = crear_producto(TIPOPRODUCTO)
                 PRODUCTOS.append(new_product)
             case 2:
                 if len(PRODUCTOS) == 0:
@@ -27,7 +27,7 @@ def main() -> None:
                 if len(PRODUCTOS) == 0:
                     print("[ERROR] Todavia no ha cargado ningun producto.")
                 else:
-                    PRODUCTOS = modificar_producto(PRODUCTOS)
+                    PRODUCTOS = modificar_producto(PRODUCTOS, TIPOPRODUCTO)
             case 4:
                 if len(PRODUCTOS) == 0:
                     print("[ERROR] Todavia no ha cargado ningun producto.")
@@ -58,11 +58,17 @@ def main() -> None:
                 if len(PRODUCTOS) == 0:
                     print("[ERROR] Todavia no ha cargado ningun producto.")
                 else:
-                    listado_precio_promedio_tipo(PRODUCTOS)
+                    listado_precio_promedio_tipo(PRODUCTOS, TIPOPRODUCTO)
             case 9:
-                pass
+                if len(PRODUCTOS) == 0:
+                    print("[ERROR] Todavia no ha cargado ningun producto.")
+                else:
+                    listado_productos_descripcion_tipo(PRODUCTOS, TIPOPRODUCTO)
             case 10:
-                pass
+                if len(PRODUCTOS) == 0:
+                    print("[ERROR] Todavia no ha cargado ningun producto.")
+                else:
+                    listado_productos_por_tipo(PRODUCTOS, TIPOPRODUCTO)
             case 11:
                 print("[EXIT] Gracias por utilizar el sistema de gestión de estacionamientos")
                 break
@@ -72,4 +78,5 @@ def main() -> None:
         if not option_continue:
             print("[EXIT] Gracias por utilizar el sistema de gestión de estacionamientos")
             break
+
 main()

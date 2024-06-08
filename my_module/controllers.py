@@ -1,6 +1,7 @@
 from my_module.data import get_index_producto, bussiness_get_value_of_array, array_sub_menu_options, array_options_simple
 from my_module.validations import validate_input_length, validate_number_is_positive, validate_is_float_with_msg, validate_is_number_with_msg
 from my_module.utils import get_number_with_range
+from my_module.basic_functions import custom_filter_bussiness
 
 def get_descripcion() -> str:
     try:
@@ -12,10 +13,17 @@ def get_descripcion() -> str:
     except ValueError:
         print("[ERROR] La descripción del producto solo debe contener solo letras.")
 
-def get_opcion(msg_input: str, list_enum) -> int:
+def get_opcion(msg_input: str, lista_tipo_producto, tipo: int | None) -> int:
     try:
-        opcion_selected = bussiness_get_value_of_array(list_enum, msg_input, "[ERROR] Opción invalida")
+        opcion_selected = bussiness_get_value_of_array(lista_tipo_producto, msg_input, "[ERROR] Opción invalida", tipo)
         return opcion_selected.value
+    except ValueError:
+        print("[ERROR] El importe debe ser un número.")
+
+def get_opcion_tipo(msg_input: str, lista_tipo_producto, tipo: int | None) -> int:
+    try:
+        opcion_selected = bussiness_get_value_of_array(lista_tipo_producto, msg_input, "[ERROR] Opción invalida", tipo)
+        return opcion_selected["id_tipo"]
     except ValueError:
         print("[ERROR] El importe debe ser un número.")
 
@@ -51,3 +59,12 @@ def get_limite_lista(list_productos: list, mgs_input: str) -> int:
         cantidad_productos = validate_is_number_with_msg(cantidad_productos, mgs_input, "[ERROR] La cantidad de valores a listar debe ser un número.")
         cantidad_productos = validate_number_is_positive(cantidad_productos, mgs_input, "[ERROR] La cantidad de valores a listar debe ser un número positivo.")
     return cantidad_productos
+
+def get_lista_producto_tipo(lista_productos: list, lista_tipo_producto: list) -> list:
+    tipo = get_opcion_tipo("[INFO] Seleccione el tipo de producto para calcular el precio promedio: ", lista_tipo_producto, 0)
+    productos_filtrados = custom_filter_bussiness(lista_productos, lambda a: a["tipo"] == tipo)
+    while len(productos_filtrados) == 0:
+        print(f"[ERROR] No se encontraron productos con el tipo seleccionado.")
+        tipo = get_opcion_tipo("[INFO] Seleccione el tipo de producto para calcular el precio promedio: ", lista_tipo_producto, 0)
+        productos_filtrados = custom_filter_bussiness(lista_productos, lambda a: a["tipo"] == tipo)
+    return productos_filtrados

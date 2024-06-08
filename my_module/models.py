@@ -1,7 +1,7 @@
 from enum import Enum
 
-from my_module.controllers import get_descripcion, get_opcion, get_precio, listar_productos, seleccionar_producto_modificar, get_limite_lista
-from my_module.basic_functions import read_json, custom_filter_bussiness, custom_reduce
+from my_module.controllers import get_descripcion, get_opcion, get_opcion_tipo, get_precio, listar_productos, seleccionar_producto_modificar, get_limite_lista, get_lista_producto_tipo
+from my_module.basic_functions import read_json, custom_find_with_return_value, custom_reduce, custom_filter
 id_producto = 0
 
 class Nacionalidad(Enum):
@@ -36,10 +36,10 @@ class TipoProducto:
         self.id_tipo = id_tipo
         self.descripcion_tipo = descripcion_tipo
 
-def crear_producto() -> dict:
+def crear_producto(lista_tipo_producto: list[TipoProducto]) -> dict:
     descripcion = get_descripcion()
-    nacionalidad = get_opcion("Seleccione la nacionalidad del producto: ", list(Nacionalidad))
-    tipo = get_opcion("Seleccione el tipo del producto: ", list(Tipo))
+    nacionalidad = get_opcion("Seleccione la nacionalidad del producto: ", list(Nacionalidad), None)
+    tipo = get_opcion_tipo("Seleccione el tipo del producto: ", lista_tipo_producto, 0)
     precio = get_precio("Ingrese el precio del producto: ")
     new_product = Producto(descripcion, nacionalidad, tipo, precio)
     return new_product.__dict__
@@ -50,12 +50,12 @@ def eliminar_producto(lista_productos: list[Producto]) -> list[Producto]:
     print(f"[INFO] Se elimino el producto con id {producto_eliminado["id_producto"]}")
     return lista_productos
 
-def modificar_producto(lista_productos: list[Producto]) -> list[Producto]:
+def modificar_producto(lista_productos: list[Producto], lista_tipo_producto: list[TipoProducto]) -> list[Producto]:
     dict_productos_a_modificar = seleccionar_producto_modificar(lista_productos)
     index_a_modificar = dict_productos_a_modificar["producto_index"]
     match dict_productos_a_modificar["tipo_modificacion"]:
         case 1:
-            lista_productos[index_a_modificar]["tipo"] = get_opcion("Seleccione el nuevo tipo del producto: ", list(Tipo))
+            lista_productos[index_a_modificar]["tipo"] = get_opcion_tipo("Seleccione el nuevo tipo del producto: ", lista_tipo_producto, 0)
         case 2:
             lista_productos[index_a_modificar]["precio"] = get_precio("Ingrese el nuevo precio del producto: ")
         case _:
@@ -68,13 +68,24 @@ def listado_productos_caros(productos_ordenados: list[Producto]) -> None:
     for index in range(cantidad_productos_listar):
         print(f"{index + 1}) {productos_ordenados[index]["id_producto"]} - {productos_ordenados[index]["descripcion"]} - {productos_ordenados[index]["precio"]}")
 
-def listado_precio_promedio_tipo(productos: list[Producto]) -> None:
-    tipo = get_opcion("[INFO] Seleccione el tipo de producto para calcular el precio promedio: ", list(Tipo))
-    productos_filtrados = custom_filter_bussiness(productos, lambda a: a["tipo"] == tipo)
-    while len(productos_filtrados) == 0:
-        print(f"[ERROR] No se encontraron productos con el tipo seleccionado.")
-        tipo = get_opcion("[INFO] Seleccione el tipo de producto para calcular el precio promedio: ", list(Tipo))
-        productos_filtrados = custom_filter_bussiness(productos, lambda a: a["tipo"] == tipo)
+def listado_precio_promedio_tipo(lista_productos: list[Producto], lista_tipo_producto: list[TipoProducto]) -> None:
+    productos_filtrados = get_lista_producto_tipo(lista_productos, lista_tipo_producto)
     total_precio_productos = custom_reduce(productos_filtrados, lambda a, b: a["precio"] + b["precio"])
     promedio_por_tipo = total_precio_productos / len(productos_filtrados)
-    print(f"[INFO] El precio promedio de los productos de tipo {Tipo(tipo).name} es: {promedio_por_tipo}")
+    tipo_producto_name = custom_find_with_return_value(lista_tipo_producto,productos_filtrados[0]["tipo"])
+    print(f"[INFO] El precio promedio de los productos de tipo {tipo_producto_name} es: {promedio_por_tipo}")
+
+def listado_productos_descripcion_tipo(lista_productos: list[Producto], lista_tipo_producto: list[TipoProducto]) -> None:
+    for index in range(0, len(lista_productos)):
+        tipo_producto_name = custom_find_with_return_value(lista_tipo_producto,lista_productos[index]["tipo"])
+        print(f"{index + 1}) [ID]: {lista_productos[index]["id_producto"]} - [DESCRIPCIÓN]: {lista_productos[index]["descripcion"]} - [NACIONALIDAD]: {lista_productos[index]["nacionalidad"]} - [TIPO_DESCRIPCIÓN]: {tipo_producto_name} - [PRECIO]: {lista_productos[index]["precio"]}")
+
+def listado_productos_por_tipo(lista_productos: list[Producto], lista_tipo_producto: list[TipoProducto]) -> None:
+    for tipo_producto in lista_tipo_producto:
+        productos_filtrados_tipo = custom_filter(lista_productos, lambda a: a["tipo"] == tipo_producto["id_tipo"])
+        print(f"[INFO] Listado de productos de tipo {tipo_producto["descripcion_tipo"]}:")
+        if len(productos_filtrados_tipo) == 0:
+            print("[INFO] No hay productos de este tipo")
+        else:
+            listado_productos_descripcion_tipo(productos_filtrados_tipo, lista_tipo_producto)
+        print("\n")
